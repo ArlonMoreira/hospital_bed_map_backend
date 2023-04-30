@@ -8,6 +8,8 @@ from drf_spectacular.utils import extend_schema, OpenApiTypes, OpenApiExample
 from .serializer import LoginSerializer
 from ..utils import get_tokens_for_user
 from .examples import LOGIN_RESPONSE_EXAMPLES, LOGIN_REQUESTS, REFRESH_TOKEN_RESPONSE_EXAMPLES, REFRESH_TOKEN_REQUEST
+from ..models import Users
+import jwt
 
 #Customiza a atualização do token para retornar também o refresh token como resposta
 class RefreshTokenView(TokenRefreshView, mixins.ListModelMixin, mixins.CreateModelMixin):
@@ -29,24 +31,28 @@ class RefreshTokenView(TokenRefreshView, mixins.ListModelMixin, mixins.CreateMod
         request=REFRESH_TOKEN_REQUEST
     )    
     def post(self, request):
-        print('--->', request.user)
         serializer = self.get_serializer(data=request.data)
         if not(serializer.is_valid()):
             return Response({'message': 'Sua sessão foi encerrada.', 'data': serializer.errors}, status=status.HTTP_401_UNAUTHORIZED)
         
-        refresh_token = serializer.validated_data.get('refresh')
-        refresh = RefreshToken(refresh_token)
+        refresh_token = request.data['refresh']
 
-        #Obtém o usuário associado ao refresh token
-        user = refresh.user
+        # Decodifica o token refresh usando a chave secreta (secret key)
+        decoded_token = RefreshToken(refresh_token, verify=False)
+        payload = decoded_token.payload
 
-        #Usa o usuário para criar um novo access token
-        access_token = AccessToken.for_user(user)
+        # Obtém o usuário associado ao token
+        user = Users.objects.get(id=payload.get('user_id'))
+        
+        # Cria um novo token de acesso para o usuário
+        # Aqui é gerado um novo refreshtoken.
+        new_refresh = RefreshToken.for_user(user) #Caso não quero que caia a sessão, passarei um novo token
+        access_token = new_refresh.access_token
 
         data = {
             'message': 'Sessão renovada.',
             'data': {
-                'refresh': request.data['refresh'],
+                'refresh': refresh_token,
                 'access': str(access_token),      
             }
         }
