@@ -56,6 +56,33 @@ REST_FRAMEWORK = {
     ],
 }
 
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Mapa de leitos (Hospital bed map)',
+    'DESCRIPTION': 'Projeto mapa de leitos hospitalar, com o objetivo de servir como ferramenta de apoio para regulação de leitos em unidades de saúde públicas ou privadas.</br>(Hospital bed map project, with the aim of serving as a support tool for regulating beds in public or private health units.)',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SERVERS': [
+        {
+            'url': os.environ['URL_INGRESS'],
+            'description': 'Servidor principal'
+        }
+    ],
+    'CONTACT': {
+        'name': 'Arlon da Silva Moreira',
+        'email': 'arlonsilva28@gmail.com'        
+    },
+    'COMPONENT_SPLIT_REQUEST': True,
+    'EXAMPLES_PROVIDE_CHOICES': True,   
+    'SWAGGER_UI_SETTINGS': {
+        'deepLinking': False,
+        'persistAuthorization': False,
+        'displayOperationId': False        
+    },  
+    'SWAGGER_UI_DIST': 'SIDECAR',  # shorthand to use the sidecar instead
+    'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
+    'REDOC_DIST': 'SIDECAR'        
+}
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
