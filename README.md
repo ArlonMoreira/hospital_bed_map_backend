@@ -1,1 +1,0 @@
-# hospital_bed_map_backends
