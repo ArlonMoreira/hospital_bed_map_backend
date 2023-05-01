@@ -22,7 +22,7 @@ from drf_spectacular.views import SpectacularJSONAPIView, SpectacularAPIView, Sp
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('hospital_bed_map_backend.accounts.api.url')),
-    path('hospital_beds/', include('hospital_bed_map_backend.hospital.api.url')),
+    path('hospital/', include('hospital_bed_map_backend.hospital.api.url')),
     # YOUR PATTERNS
     path('api/docs/', SpectacularJSONAPIView.as_view(), name='schema-json'),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),

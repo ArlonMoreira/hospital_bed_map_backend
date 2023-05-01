@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed, NotAuthenticated
 from drf_spectacular.utils import extend_schema, OpenApiTypes, OpenApiExample
 from .serializer import HospitalSerializer
+from .examples import RESPONSE, REQUESTS
 
 class HospitalView(generics.GenericAPIView):
     serializer_class = HospitalSerializer
@@ -18,61 +19,15 @@ class HospitalView(generics.GenericAPIView):
         return super().handle_exception(exc)     
     
     @extend_schema(
-        description='',
+        description='<p>Este é um endpoint que permite a criação de um novo objeto Hospital no sistema. Para acessá-lo, é necessário que o usuário esteja autenticado. O endpoint recebe uma requisição HTTP POST com os dados do hospital a ser cadastrado, em formato JSON.</p>\
+        <i>This is an endpoint that allows the creation of a new Hospital object in the system. To access it, the user must be authenticated. The endpoint receives an HTTP POST request with the data of the hospital to be registered, in JSON format.</i>',
         responses={
             201: OpenApiTypes.OBJECT,
             400: OpenApiTypes.OBJECT,
             401: OpenApiTypes.OBJECT,
         },
-        examples=[
-            OpenApiExample(
-                "Success",
-                description='<p>Sucesso ao cadastrar um novo hospital.</p>\
-                <i>Success in registering a new hospital.</i>',
-                value={
-                    'message': 'Hospital cadastrado.',
-                    'data': [
-                        {
-                            "id": 0,
-                            "name": "string",
-                            "acronym": "string",
-                            "is_active": True
-                        }                        
-                    ]
-                },
-                response_only=True,
-                status_codes=["201"],        
-            ),
-            OpenApiExample(
-                "Bad Request",
-                description='<p>Falha ao cadastrar hospital pois os parâmetros informados não estão conforme o esperado.</p>\
-                <i>Failed to register hospital because the informed parameters are not as expected.</i>',
-                value={
-                    'message': 'Falha ao cadastrar hospital, verifique os dados inseridos e tente novamente.',
-                    'data': {
-                        "name": [
-                            "O nome do hospital informado é relativamente curto.",
-                            "Hospital com este none já existe.",
-                            "Este campo não pode ser nulo.",
-                            "Este campo não pode ser em branco.",
-                            "Este campo é obrigatório."
-                        ]                                            
-                    }
-                },
-                response_only=True,
-                status_codes=["400"],        
-            ),                       
-        ],     
-        request={
-            "application/json": {
-                "type": "object",
-                "properties": {
-                    "name": {"type": "string", "description": "Nome completo do hospital", "required": True, "min_lengh": 10},
-                    "acronym": {"type": "string", "description": "Sigla do hospital", "required": False},
-                    "is_active": {"type": "boolean", "description": "Hospital será criado como ativo ou não", "required": False, "default": True}
-                }
-            }            
-        }
+        examples=RESPONSE,     
+        request=REQUESTS
     )    
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data, context={'user': request.user})
