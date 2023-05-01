@@ -3,6 +3,13 @@ from ..models import Hospital
 
 class HospitalSerializer(serializers.ModelSerializer):
 
+    is_active = serializers.BooleanField(
+        required=False, #Não é obrigatório, por padrão será atribuído o valor True  
+        error_messages={
+            'invalid': 'Esse campo precisa ser do tipo boolean.'
+        }
+    )    
+
     class Meta:
         model = Hospital
         fields = ('id', 'name', 'acronym', 'is_active', )
@@ -24,9 +31,9 @@ class HospitalSerializer(serializers.ModelSerializer):
 
         else: #if the data is new
             hospital = Hospital(
-                name=self.validated_data['name'],
-                acronym=self.validated_data['acronym'],
-                is_active=self.validated_data['is_active'],
+                name=self.validated_data.get('name'),
+                acronym=self.validated_data.get('acronym'),
+                is_active=self.validated_data.get('is_active', True),
                 author=self.context['user']
             )
             hospital.save()

@@ -2,14 +2,13 @@ from django.contrib.auth import authenticate, login, logout
 from rest_framework import mixins, generics, status
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenRefreshView
-from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
-from drf_spectacular.utils import extend_schema, OpenApiTypes, OpenApiExample
+from drf_spectacular.utils import extend_schema, OpenApiTypes
 from .serializer import LoginSerializer
 from ..utils import get_tokens_for_user
 from .examples import LOGIN_RESPONSE_EXAMPLES, LOGIN_REQUESTS, REFRESH_TOKEN_RESPONSE_EXAMPLES, REFRESH_TOKEN_REQUEST
 from ..models import Users
-import jwt
 
 #Customiza a atualização do token para retornar também o refresh token como resposta
 class RefreshTokenView(TokenRefreshView, mixins.ListModelMixin, mixins.CreateModelMixin):
@@ -46,13 +45,13 @@ class RefreshTokenView(TokenRefreshView, mixins.ListModelMixin, mixins.CreateMod
         
         # Cria um novo token de acesso para o usuário
         # Aqui é gerado um novo refreshtoken.
-        new_refresh = RefreshToken.for_user(user) #Caso não quero que caia a sessão, passarei um novo token
+        new_refresh = RefreshToken.for_user(user)
         access_token = new_refresh.access_token
 
         data = {
             'message': 'Sessão renovada.',
             'data': {
-                'refresh': refresh_token,
+                'refresh': str(new_refresh),
                 'access': str(access_token),      
             }
         }

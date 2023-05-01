@@ -4,24 +4,25 @@ from django.conf import settings
 # Hospitais
 class Hospital(models.Model):
     name = models.CharField(
-        verbose_name='Nome do hospital',
+        verbose_name='none',
         max_length=255,
+        unique=True,
         null=False,
         blank=False
     )
     acronym = models.CharField(
-        verbose_name='Sigla',
+        verbose_name='sigla',
         max_length=45,
         null=True,
         blank=True
     )
     is_active = models.BooleanField(
-        verbose_name='Ativo',
+        verbose_name='ativo',
         default=True
     )
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        verbose_name='Usuário',
+        verbose_name='usuario',
         on_delete=models.SET_NULL,
         blank=True,
         null=True
