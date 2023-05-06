@@ -2,9 +2,10 @@ from rest_framework import generics, status, serializers
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed, NotAuthenticated
-from drf_spectacular.utils import extend_schema, OpenApiTypes, OpenApiExample
+from drf_spectacular.utils import extend_schema, OpenApiTypes
 from .serializer import HospitalSerializer
-from .examples import RESPONSE, REQUESTS
+from ..models import Hospital
+from .examples import RESPONSE, REQUESTS, RESPONSE_GET
 
 class HospitalView(generics.GenericAPIView):
     serializer_class = HospitalSerializer
@@ -16,7 +17,30 @@ class HospitalView(generics.GenericAPIView):
         if isinstance(exc, AuthenticationFailed):
             return Response({'message': 'As credenciais de autenticação são inválidas.'}, status=status.HTTP_401_UNAUTHORIZED)        
 
-        return super().handle_exception(exc)     
+        return super().handle_exception(exc)
+    
+    @extend_schema(
+        description='<p>Este endpoint possibilita a obtenção de dados de um ou mais hospitais existentes no sistema. Ao efetuar uma requisição sem a inclusão de um identificador (id), serão retornados os dados de todos os hospitais existentes no sistema. No entanto, ao especificar o identificador (id) na URL, somente os dados do hospital correspondente serão retornados.</p></br>\
+        <i>This endpoint makes it possible to obtain data from one or more hospitals in the system. When making a request without including an identifier (id), data from all hospitals in the system will be returned. However, when specifying the identifier (id) in the URL, only the corresponding hospital data will be returned.</i>',
+        responses={
+            200: OpenApiTypes.OBJECT,
+            401: OpenApiTypes.OBJECT,
+            404: OpenApiTypes.OBJECT
+        },
+        examples=RESPONSE_GET
+    )
+    def get(self, request, id=None):
+        
+        if id is None:
+            serializer = self.serializer_class(Hospital.objects.all(), many=True)
+            return Response({'message': 'Dados obtidos com sucesso.', 'data': serializer.data}, status=status.HTTP_200_OK)
+        
+        hospital = Hospital.objects.filter(id=id).first()
+        if hospital is None:
+            return Response({'message': 'Hospital {} não encontrado'.format(id)}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = self.serializer_class(hospital)
+        return Response({'message': 'Dados obtidos com sucesso.', 'data': [serializer.data]}, status=status.HTTP_200_OK)
     
     @extend_schema(
         description='<p>Este é um endpoint que permite a criação de um novo objeto Hospital no sistema. Para acessá-lo, é necessário que o usuário esteja autenticado. O endpoint recebe uma requisição HTTP POST com os dados do hospital a ser cadastrado, em formato JSON.</p>\

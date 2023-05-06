@@ -74,13 +74,14 @@ SPECTACULAR_SETTINGS = {
     'COMPONENT_SPLIT_REQUEST': True,
     'EXAMPLES_PROVIDE_CHOICES': True,   
     'SWAGGER_UI_SETTINGS': {
+        'displayOperationId': True,
         'deepLinking': False,
         'persistAuthorization': False,
         'displayOperationId': False        
     },  
     'SWAGGER_UI_DIST': 'SIDECAR',  # shorthand to use the sidecar instead
     'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
-    'REDOC_DIST': 'SIDECAR'        
+    'REDOC_DIST': 'SIDECAR'         
 }
 
 MIDDLEWARE = [
@@ -174,6 +175,6 @@ AUTH_PROFILE_MODULE = 'accounts.Users'
 AUTH_USER_MODEL = 'accounts.Users'
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=1),
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=15),
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=15),
 }
