@@ -57,7 +57,7 @@ class HospitalView(generics.GenericAPIView):
         serializer = self.serializer_class(data=request.data, context={'user': request.user})
 
         if not(serializer.is_valid()):
-            return Response({'message': 'Falha ao cadastrar hospital, verifique os dados inseridos e tente novamente.', 'data':[serializer.errors]}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'Falha ao cadastrar hospital, verifique os dados inseridos e tente novamente.', 'data': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer_data = self.serializer_class(serializer.save()).data
 
