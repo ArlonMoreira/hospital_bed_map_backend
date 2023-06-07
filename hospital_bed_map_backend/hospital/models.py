@@ -3,8 +3,22 @@ from django.conf import settings
 
 # Hospitais
 class Hospital(models.Model):
+    cnes = models.CharField(
+        verbose_name='cnes',
+        max_length=7,
+        unique=True,
+        blank=False,
+        null=False
+    )
+    cnpj = models.CharField(
+        verbose_name='cnpj',
+        max_length=18,
+        unique=True,
+        blank=False,
+        null=False
+    )
     name = models.CharField(
-        verbose_name='none',
+        verbose_name='nome',
         max_length=255,
         unique=True,
         null=False,
@@ -13,8 +27,9 @@ class Hospital(models.Model):
     acronym = models.CharField(
         verbose_name='sigla',
         max_length=45,
-        null=True,
-        blank=True
+        unique=True,
+        null=False,
+        blank=False
     )
     is_active = models.BooleanField(
         verbose_name='ativo',

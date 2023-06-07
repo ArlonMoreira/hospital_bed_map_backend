@@ -4,8 +4,10 @@ REQUESTS = {
     "application/json": {
         "type": "object",
         "properties": {
-            "name": {"type": "string", "description": "Nome completo do hospital", "required": True, "min_lengh": 10},
-            "acronym": {"type": "string", "description": "Sigla do hospital", "required": False},
+            "cnes": {"type": "number", "description": "cnes", "required": True},
+            "cnpj": {"type": "number", "description": "cnpj", "required": True},
+            "name": {"type": "string", "description": "Nome completo do hospital", "required": True, "min_lengh": 10, "max_lengh": 255},
+            "acronym": {"type": "string", "description": "Sigla do hospital", "required": True, "max_lengh": 45},
             "is_active": {"type": "boolean", "description": "Hospital será criado como ativo ou não", "required": False, "default": True}
         }
     }            
@@ -21,6 +23,8 @@ RESPONSE_GET = [
             'data': [
                 {
                     "id": 0,
+                    "cnes": "string",
+                    "cnpj": "string",
                     "name": "string",
                     "acronym": "string",
                     "is_active": True
@@ -72,6 +76,8 @@ RESPONSE = [
             'data': [
                 {
                     "id": 0,
+                    "cnes": "string",
+                    "cnpj": "string",
                     "name": "string",
                     "acronym": "string",
                     "is_active": True
@@ -88,12 +94,28 @@ RESPONSE = [
         value={
             'message': 'Falha ao cadastrar hospital, verifique os dados inseridos e tente novamente.',
             'data': {
-                "name": [
-                    "O nome do hospital informado é relativamente curto.",
-                    "Hospital com este none já existe.",
+                "cnes": [
+                    "Este campo é obrigatório.",
+                    "Hospital com este cnes já existe.",
+                    "Um número inteiro válido é exigido."
+                ],
+                "cnpj": [
+                    "Este campo é obrigatório.",
+                    "Hospital com este cnpj já existe.",
+                    "CNPJ inválido",
+                    "Certifique-se de que este campo não tenha mais de 14 caracteres."
+                ],
+                "acronym": [
+                    "Este campo é obrigatório.",
+                    "Hospital com este Sigla já existe.",
                     "Este campo não pode ser nulo.",
                     "Este campo não pode ser em branco.",
-                    "Este campo é obrigatório."
+                ],                
+                "name": [
+                    "Este campo é obrigatório.",
+                    "Hospital com este Nome já existe.",
+                    "Este campo não pode ser nulo.",
+                    "Este campo não pode ser em branco.",
                 ],
                 "is_active": [
                     "Este campo não pode ser nulo.",

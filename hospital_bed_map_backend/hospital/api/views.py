@@ -6,6 +6,7 @@ from drf_spectacular.utils import extend_schema, OpenApiTypes
 from .serializer import HospitalSerializer
 from ..models import Hospital
 from .examples import RESPONSE, REQUESTS, RESPONSE_GET
+import re
 
 class HospitalView(generics.GenericAPIView):
     serializer_class = HospitalSerializer
@@ -54,6 +55,12 @@ class HospitalView(generics.GenericAPIView):
         request=REQUESTS
     )    
     def post(self, request, *args, **kwargs):
+        #Format CNPJ field
+        cnpj = re.sub(r'\D', '', str(request.data['cnpj'])).zfill(14)
+        request.data['cnpj'] = '{}.{}.{}/{}-{}'.format(cnpj[:2], cnpj[2:5], cnpj[5:8], cnpj[8:12], cnpj[12:])
+        #Format CNES field
+        request.data['cnes'] = str(request.data['cnes']).zfill(7)
+
         serializer = self.serializer_class(data=request.data, context={'user': request.user})
 
         if not(serializer.is_valid()):
