@@ -26,7 +26,7 @@ class Hospital(models.Model):
     )
     acronym = models.CharField(
         verbose_name='sigla',
-        max_length=45,
+        max_length=10,
         unique=True,
         null=False,
         blank=False

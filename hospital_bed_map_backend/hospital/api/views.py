@@ -56,10 +56,12 @@ class HospitalView(generics.GenericAPIView):
     )    
     def post(self, request, *args, **kwargs):
         #Format CNPJ field
-        cnpj = re.sub(r'\D', '', str(request.data['cnpj'])).zfill(14)
-        request.data['cnpj'] = '{}.{}.{}/{}-{}'.format(cnpj[:2], cnpj[2:5], cnpj[5:8], cnpj[8:12], cnpj[12:])
+        if(str(request.data['cnpj']) != ""):
+            cnpj = re.sub(r'\D', '', str(request.data['cnpj'])).zfill(14)
+            request.data['cnpj'] = '{}.{}.{}/{}-{}'.format(cnpj[:2], cnpj[2:5], cnpj[5:8], cnpj[8:12], cnpj[12:])
         #Format CNES field
-        request.data['cnes'] = str(request.data['cnes']).zfill(7)
+        if(str(request.data['cnes']) != ""):
+            request.data['cnes'] = str(request.data['cnes']).zfill(7)
 
         serializer = self.serializer_class(data=request.data, context={'user': request.user})
 
