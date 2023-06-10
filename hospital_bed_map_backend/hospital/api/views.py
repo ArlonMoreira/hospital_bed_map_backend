@@ -5,7 +5,7 @@ from rest_framework.exceptions import AuthenticationFailed, NotAuthenticated
 from drf_spectacular.utils import extend_schema, OpenApiTypes
 from .serializer import HospitalSerializer
 from ..models import Hospital
-from .examples import RESPONSE, REQUESTS, RESPONSE_GET
+from .examples import RESPONSE_POST, RESPONSE_PUT, RESPONSE_GET, REQUESTS 
 import re
 
 class HospitalView(generics.GenericAPIView):
@@ -51,7 +51,7 @@ class HospitalView(generics.GenericAPIView):
             400: OpenApiTypes.OBJECT,
             401: OpenApiTypes.OBJECT,
         },
-        examples=RESPONSE,     
+        examples=RESPONSE_POST,     
         request=REQUESTS
     )    
     def post(self, request, *args, **kwargs):
@@ -75,6 +75,17 @@ class HospitalView(generics.GenericAPIView):
 
         return Response({'message': 'Hospital cadastrado.', 'data': [serializer_data]}, status=status.HTTP_201_CREATED)
     
+    @extend_schema(
+        description='<p>Este é um endpoint que permite a atualização dos dados de um hospital já cadastrado. Para acessá-lo, é necessário que o usuário esteja autenticado. O endpoint recebe uma requisição HTTP PUT com os dados do hospital a ser cadastrado, em formato JSON.</p>\
+        <i>This is an endpoint that allows you to update the data of an already registered hospital. To access it, the user must be authenticated. The endpoint receives an HTTP PUT request with the data of the hospital to be registered, in JSON format.</i>',
+        responses={
+            200: OpenApiTypes.OBJECT,
+            400: OpenApiTypes.OBJECT,
+            401: OpenApiTypes.OBJECT,
+            404: OpenApiTypes.OBJECT,
+        },
+        examples=RESPONSE_PUT
+    )
     def put(self, request, id=None):
         #Get hospital
         hospital = Hospital.objects.filter(id=id).first()
@@ -94,10 +105,10 @@ class HospitalView(generics.GenericAPIView):
             serializer = self.serializer_class(hospital, data=request.data, context={'user': request.user}, partial=True)
 
             if not(serializer.is_valid()):
-                return Response({'message': 'Falha ao cadastrar hospital, verifique os dados inseridos e tente novamente.', 'data': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'message': 'Falha ao atualizar hospital, verifique os dados inseridos e tente novamente.', 'data': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
             serializer_data = self.serializer_class(serializer.save()).data
 
-            return Response({'message': 'Hospital cadastrado.', 'data': [serializer_data]}, status=status.HTTP_200_OK)
+            return Response({'message': 'Dados do hospital atualizado.', 'data': [serializer_data]}, status=status.HTTP_200_OK)
         else:
-            return Response({'message': 'Hospital {} não encontrado'.format(id)}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'message': 'Hospital não encontrado ou não informado.'}, status=status.HTTP_404_NOT_FOUND)
