@@ -56,12 +56,15 @@ class HospitalView(generics.GenericAPIView):
     )    
     def post(self, request, *args, **kwargs):
         #Format CNPJ field
-        if(str(request.data['cnpj']) != ""):
-            cnpj = re.sub(r'\D', '', str(request.data['cnpj'])).zfill(14)
-            request.data['cnpj'] = '{}.{}.{}/{}-{}'.format(cnpj[:2], cnpj[2:5], cnpj[5:8], cnpj[8:12], cnpj[12:])
+        if('cnpj' in request.data):
+            if(str(request.data['cnpj']) != ""):
+                cnpj = re.sub(r'\D', '', str(request.data['cnpj'])).zfill(14)
+                request.data['cnpj'] = '{}.{}.{}/{}-{}'.format(cnpj[:2], cnpj[2:5], cnpj[5:8], cnpj[8:12], cnpj[12:])
+
         #Format CNES field
-        if(str(request.data['cnes']) != ""):
-            request.data['cnes'] = str(request.data['cnes']).zfill(7)
+        if('cnes' in request.data):
+            if(str(request.data['cnes']) != ""):
+                request.data['cnes'] = str(request.data['cnes']).zfill(7)
 
         serializer = self.serializer_class(data=request.data, context={'user': request.user})
 
@@ -71,3 +74,30 @@ class HospitalView(generics.GenericAPIView):
         serializer_data = self.serializer_class(serializer.save()).data
 
         return Response({'message': 'Hospital cadastrado.', 'data': [serializer_data]}, status=status.HTTP_201_CREATED)
+    
+    def put(self, request, id=None):
+        #Get hospital
+        hospital = Hospital.objects.filter(id=id).first()
+
+        if(hospital):
+            #Format CNPJ field
+            if('cnpj' in request.data):
+                if(str(request.data['cnpj']) != ""):
+                    cnpj = re.sub(r'\D', '', str(request.data['cnpj'])).zfill(14)
+                    request.data['cnpj'] = '{}.{}.{}/{}-{}'.format(cnpj[:2], cnpj[2:5], cnpj[5:8], cnpj[8:12], cnpj[12:])
+
+            #Format CNES field
+            if('cnes' in request.data):
+                if(str(request.data['cnes']) != ""):
+                    request.data['cnes'] = str(request.data['cnes']).zfill(7)
+
+            serializer = self.serializer_class(hospital, data=request.data, context={'user': request.user}, partial=True)
+
+            if not(serializer.is_valid()):
+                return Response({'message': 'Falha ao cadastrar hospital, verifique os dados inseridos e tente novamente.', 'data': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+            serializer_data = self.serializer_class(serializer.save()).data
+
+            return Response({'message': 'Hospital cadastrado.', 'data': [serializer_data]}, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': 'Hospital {} não encontrado'.format(id)}, status=status.HTTP_404_NOT_FOUND)

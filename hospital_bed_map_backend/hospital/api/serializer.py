@@ -28,7 +28,7 @@ class HospitalSerializer(serializers.ModelSerializer):
     def save(self, **kwargs):
         hospital = self.instance
 
-        if(hospital): #if the data is updated 
+        if(hospital): #if the data is updated
             hospital.cnes = self.validated_data.get('cnes', hospital.cnes)
             hospital.cnpj = self.validated_data.get('cnpj', hospital.cnpj)
             hospital.name = self.validated_data.get('name', hospital.name)
@@ -36,9 +36,7 @@ class HospitalSerializer(serializers.ModelSerializer):
             hospital.is_active = self.validated_data.get('is_active', hospital.is_active)
             hospital.author = self.context['user']
             hospital.save()
-
-        else: #if the data is new
-
+        else:
             hospital = Hospital(
                 cnes=self.validated_data.get('cnes'),
                 cnpj=self.validated_data.get('cnpj'),
