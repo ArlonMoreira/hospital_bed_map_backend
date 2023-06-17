@@ -5,7 +5,7 @@ from pycpfcnpj import cpfcnpj
 class HospitalSerializer(serializers.ModelSerializer):
 
     is_active = serializers.BooleanField(
-        required=False, #Não é obrigatório, por padrão será atribuído o valor True  
+        required=False,
         error_messages={
             'invalid': 'Esse campo precisa ser do tipo boolean.'
         }

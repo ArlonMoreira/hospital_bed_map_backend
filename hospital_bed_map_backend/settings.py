@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'hospital_bed_map_backend.accounts',
     'hospital_bed_map_backend.hospital',
+    'hospital_bed_map_backend.sectors'
 ]
 
 REST_FRAMEWORK = {
