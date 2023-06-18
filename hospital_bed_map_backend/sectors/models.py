@@ -55,7 +55,7 @@ class Sectors(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Data de Atualização')
 
     def __str__(self):
-        return self.resum
+        return self.name
     
     class Meta:
         verbose_name = 'Setor'

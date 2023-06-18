@@ -19,17 +19,15 @@ RESPONSE_POST = [
         <i>Success in registering a new sector.</i>',
         value={
             'message': 'Setor cadastrado.',
-            'data': [
-                {
-                    "id": 0,
-                    "name": "string",
-                    "description": "string",
-                    "tip_acc": "string",
-                    "activation_date": "string",
-                    "deactivation_date": "string",
-                    "is_active": True
-                }
-            ]
+            'data': {
+                "id": 0,
+                "name": "string",
+                "description": "string",
+                "tip_acc": "string",
+                "activation_date": "string",
+                "deactivation_date": "string",
+                "is_active": True
+            }
         },
         response_only=True,
         status_codes=["201"],        
@@ -98,4 +96,56 @@ RESPONSE_POST = [
         response_only=True,
         status_codes=["404"],        
     ),
+]
+
+RESPONSE_GET = [
+    OpenApiExample(
+        "Success",
+        description='<p>Pode retornar um ou mais setores de acordo com id passado na URL da requisição.</p>\
+        <i>It can return one or more sectors according to the id passed in the request URL.</i>',
+        value={
+            'message': 'Dados obtidos com sucesso.',
+            'data': [
+                {
+                    "id": 0,
+                    "name": "string",
+                    "description": "string",
+                    "tip_acc": "string",
+                    "is_active": True
+                }                
+            ]
+        },
+        response_only=True,
+        status_codes=["200"],        
+    ),
+    OpenApiExample(
+        "Not found",
+        description='<p>Falha ao encontrar o hospital, pois o ID informado não existe no banco de dados.</p>\
+        <i>Failed to find the hospital, as the ID entered does not exist in the database.</i>',
+        value={
+            'message': 'Hospital {id} não encontrado.',
+        },
+        response_only=True,
+        status_codes=["404"],        
+    ),    
+    OpenApiExample(
+        "Unauthorized/Token not found",
+        description='<p>Falha de autenticação, credenciais não informadas.</p>\
+        <i>Authentication failed, credentials not assigned.</i>',
+        value={
+            'message': 'As credenciais de autenticação não foram fornecidas.',
+        },
+        response_only=True,
+        status_codes=["401"],        
+    ),
+    OpenApiExample(
+        "Unauthorized/Token is invalid",
+        description='<p>Falha de autenticação, credenciais informadas inválidas.</p>\
+        <i>Authentication failed, invalid credentials.</i>',
+        value={
+            'message': 'As credenciais de autenticação são inválidas.',
+        },
+        response_only=True,
+        status_codes=["401"],        
+    ),  
 ]
