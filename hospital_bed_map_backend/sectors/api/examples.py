@@ -98,6 +98,45 @@ RESPONSE_POST = [
     ),
 ]
 
+RESPONSE_TIP_ACC_GET = [
+    OpenApiExample(
+        "Success",
+        description='<p>Retorna todos os tipos de acomodações cadastrados.</p>\
+        <i>Returns all registered accommodation types.</i>',
+        value={
+            'message': 'Dados obtidos com sucesso.',
+            'data': [
+                {
+                    "id": 0,
+                    "description": "string",
+                }                
+            ]
+        },
+        response_only=True,
+        status_codes=["200"],        
+    ),
+    OpenApiExample(
+        "Unauthorized/Token not found",
+        description='<p>Falha de autenticação, credenciais não informadas.</p>\
+        <i>Authentication failed, credentials not assigned.</i>',
+        value={
+            'message': 'As credenciais de autenticação não foram fornecidas.',
+        },
+        response_only=True,
+        status_codes=["401"],        
+    ),
+    OpenApiExample(
+        "Unauthorized/Token is invalid",
+        description='<p>Falha de autenticação, credenciais informadas inválidas.</p>\
+        <i>Authentication failed, invalid credentials.</i>',
+        value={
+            'message': 'As credenciais de autenticação são inválidas.',
+        },
+        response_only=True,
+        status_codes=["401"],        
+    ),
+]
+
 RESPONSE_GET = [
     OpenApiExample(
         "Success",

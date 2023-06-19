@@ -3,9 +3,28 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed, NotAuthenticated
 from drf_spectacular.utils import extend_schema, OpenApiTypes
-from .serializer import SectorsSerializer
+from .serializer import SectorsSerializer, TypeAccommodationSerializer
 from ..models import Hospital, Sectors, TypeAccommodation
-from .examples import REQUESTS_POST, RESPONSE_POST, RESPONSE_GET
+from .examples import REQUESTS_POST, RESPONSE_POST, RESPONSE_GET, RESPONSE_TIP_ACC_GET
+
+class TypeAccommodationView(generics.GenericAPIView):
+    serializer_class = TypeAccommodationSerializer
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        description='<p>Endpoint que retorna uma lista com os tipos de acomodação.</p>\
+        <i>Endpoint that returns a list of accommodation types.</i>',
+        responses={
+            200: OpenApiTypes.OBJECT,
+            401: OpenApiTypes.OBJECT,
+        },
+        examples=RESPONSE_TIP_ACC_GET
+    )
+    def get(self, request):
+        data = TypeAccommodation.objects.all()
+        serializer = self.serializer_class(data, many=True)
+
+        return Response({'message': 'Dados obtidos com sucesso.', 'data': serializer.data}, status=status.HTTP_200_OK)
 
 class SectorsView(generics.GenericAPIView):
     serializer_class = SectorsSerializer

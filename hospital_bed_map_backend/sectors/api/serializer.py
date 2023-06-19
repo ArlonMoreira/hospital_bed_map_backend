@@ -2,6 +2,12 @@ from rest_framework import serializers
 from ..models import Sectors, Hospital, TypeAccommodation
 from datetime import datetime
 
+class TypeAccommodationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = TypeAccommodation
+        fields = ('id', 'description')
+
 class SectorsSerializer(serializers.ModelSerializer):
 
     is_active = serializers.BooleanField(
