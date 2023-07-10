@@ -25,6 +25,20 @@ class TypeAccommodationView(generics.GenericAPIView):
         serializer = self.serializer_class(data, many=True)
 
         return Response({'message': 'Dados obtidos com sucesso.', 'data': serializer.data}, status=status.HTTP_200_OK)
+    
+class SectorView(generics.GenericAPIView):
+    serializer_class = SectorsSerializer
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, id=None):
+        #Get sector
+        sector = Sectors.objects.filter(id=id)
+        
+        serializer = self.serializer_class(sector, data=request.data, context={'user': request.user, 'hospital': id})
+
+        
+
+        return Response({})
 
 class SectorsView(generics.GenericAPIView):
     serializer_class = SectorsSerializer

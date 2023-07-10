@@ -44,19 +44,34 @@ class SectorsSerializer(serializers.ModelSerializer):
         return value
 
     def save(self):
-        sector = Sectors(
-            hospital=Hospital.objects.filter(id=self.context['hospital']).first(),
-            name=self.validated_data.get('name'),
-            description=self.validated_data.get('description'),
-            tip_acc=TypeAccommodation.objects.filter(description=self.validated_data.get('tip_acc')).first(),
-            is_active=self.validated_data.get('is_active'),
-            author=self.validated_data.get('user')
-        )
+        sector = self.instance
 
-        if not self.validated_data.get('is_active'):
-            sector.deactivation_date = datetime.today()
+        if(sector):
+            sector.name = self.validated_data.get('name', sector.name)
+            sector.description = self.validated_data.get('description', sector.description)
+            sector.tip_acc = self.validated_data.get('tip_acc', sector.tip_acc)
+            sector.is_active = self.validated_data.get('is_active', sector.is_active)
+            sector.author = self.context['user']
+
+            if not self.validated_data.get('is_active'):
+                sector.deactivation_date = datetime.today()
+            else:
+                sector.activation_date = datetime.today()
         else:
-            sector.activation_date = datetime.today()
+            sector = Sectors(
+                hospital=Hospital.objects.filter(id=self.context['hospital']).first(),
+                name=self.validated_data.get('name'),
+                description=self.validated_data.get('description'),
+                tip_acc=TypeAccommodation.objects.filter(description=self.validated_data.get('tip_acc')).first(),
+                is_active=self.validated_data.get('is_active'),
+                author=self.validated_data.get('user')
+            )
+
+            if not self.validated_data.get('is_active'):
+                sector.deactivation_date = datetime.today()
+            else:
+                sector.activation_date = datetime.today()
 
         sector.save()
+
         return sector
