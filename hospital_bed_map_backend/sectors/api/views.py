@@ -3,13 +3,21 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed, NotAuthenticated
 from drf_spectacular.utils import extend_schema, OpenApiTypes
-from .serializer import SectorsSerializer, TypeAccommodationSerializer
+from .serializer import SectorsSerializer, TypeAccommodationSerializer, SectorSerializerUpdate
 from ..models import Hospital, Sectors, TypeAccommodation
 from .examples import REQUESTS_POST, RESPONSE_POST, RESPONSE_GET, RESPONSE_TIP_ACC_GET
 
 class TypeAccommodationView(generics.GenericAPIView):
     serializer_class = TypeAccommodationSerializer
     permission_classes = [IsAuthenticated]
+
+    def handle_exception(self, exc):
+        if isinstance(exc, NotAuthenticated):
+            return Response({'message': 'As credenciais de autenticação não foram fornecidas.'}, status=status.HTTP_401_UNAUTHORIZED)
+        if isinstance(exc, AuthenticationFailed):
+            return Response({'message': 'As credenciais de autenticação são inválidas.'}, status=status.HTTP_401_UNAUTHORIZED)        
+
+        return super().handle_exception(exc)
 
     @extend_schema(
         description='<p>Endpoint que retorna uma lista com os tipos de acomodação.</p>\
@@ -26,19 +34,57 @@ class TypeAccommodationView(generics.GenericAPIView):
 
         return Response({'message': 'Dados obtidos com sucesso.', 'data': serializer.data}, status=status.HTTP_200_OK)
     
-class SectorView(generics.GenericAPIView):
-    serializer_class = SectorsSerializer
+class SectorDeleteView(generics.GenericAPIView):
+    serializer_class = SectorSerializerUpdate
     permission_classes = [IsAuthenticated]
 
-    def put(self, request, id=None):
+    def handle_exception(self, exc):
+        if isinstance(exc, NotAuthenticated):
+            return Response({'message': 'As credenciais de autenticação não foram fornecidas.'}, status=status.HTTP_401_UNAUTHORIZED)
+        if isinstance(exc, AuthenticationFailed):
+            return Response({'message': 'As credenciais de autenticação são inválidas.'}, status=status.HTTP_401_UNAUTHORIZED)        
+
+        return super().handle_exception(exc)
+
+    def delete(self, request, sector=None):
+        sector = Sectors.objects.filter(id=sector)
+
+        if sector.exists():
+            sector_data = self.serializer_class(sector, many=True).data
+            sector.delete()
+        else:
+            return Response({'message': 'Setor não encontrado.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+        return Response({'message': 'Setor deletado com sucesso.', 'data': sector_data}, status=status.HTTP_200_OK)
+    
+class SectorPutView(generics.GenericAPIView):
+    serializer_class = SectorSerializerUpdate
+    permission_classes = [IsAuthenticated]
+
+    def handle_exception(self, exc):
+        if isinstance(exc, NotAuthenticated):
+            return Response({'message': 'As credenciais de autenticação não foram fornecidas.'}, status=status.HTTP_401_UNAUTHORIZED)
+        if isinstance(exc, AuthenticationFailed):
+            return Response({'message': 'As credenciais de autenticação são inválidas.'}, status=status.HTTP_401_UNAUTHORIZED)        
+
+        return super().handle_exception(exc)
+
+    def put(self, request, sector=None):
         #Get sector
-        sector = Sectors.objects.filter(id=id)
+        sector = Sectors.objects.filter(id=sector)
         
-        serializer = self.serializer_class(sector, data=request.data, context={'user': request.user, 'hospital': id})
-
+        if sector.exists():
+            serializer = self.serializer_class(sector, data=request.data, context={'user': request.user})
+            if not(serializer.is_valid()):
+                return Response({'message': 'Falha ao atualizar os dados do setor.', 'data': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
         
+            serializer_data = self.serializer_class(serializer.save()).data
 
-        return Response({})
+        else:
+            return Response({'message': 'Setor não encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'message': 'Dados do setor atualizado com sucesso.', 'data': [serializer_data]}, status=status.HTTP_200_OK)
 
 class SectorsView(generics.GenericAPIView):
     serializer_class = SectorsSerializer
@@ -62,13 +108,13 @@ class SectorsView(generics.GenericAPIView):
         },
         examples=RESPONSE_GET
     )
-    def get(self, request, id=None):
+    def get(self, request, hospital=None):
         if id is None:
             hospital = Hospital.objects.all()
         else:
-            hospital = Hospital.objects.filter(id=id)
+            hospital = Hospital.objects.filter(id=hospital)
             if not(hospital.exists()):
-                return Response({'message': 'Hospital {} não encontrado'.format(id)}, status=status.HTTP_404_NOT_FOUND)
+                return Response({'message': 'Hospital não encontrado'}, status=status.HTTP_404_NOT_FOUND)
             
         data = Sectors.objects.filter(hospital=hospital.first().id)
         serializer = self.serializer_class(data, many=True)
@@ -85,10 +131,10 @@ class SectorsView(generics.GenericAPIView):
             404: OpenApiTypes.OBJECT,
         },
         examples=RESPONSE_POST,
-        request=REQUESTS_POST
+        request=REQUESTS_POST,
     )
-    def post(self, request, id=None):
-        if not(Hospital.objects.filter(id=id).exists()):
+    def post(self, request, hospital=None):
+        if not(Hospital.objects.filter(id=hospital).exists()):
             return Response({'message': 'Hospital não encontrado ou não informado.'}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = self.serializer_class(data=request.data, context={'user': request.user, 'hospital': id})
