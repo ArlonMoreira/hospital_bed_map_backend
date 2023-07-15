@@ -134,10 +134,11 @@ class SectorsView(generics.GenericAPIView):
         request=REQUESTS_POST,
     )
     def post(self, request, hospital=None):
+        
         if not(Hospital.objects.filter(id=hospital).exists()):
             return Response({'message': 'Hospital não encontrado ou não informado.'}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = self.serializer_class(data=request.data, context={'user': request.user, 'hospital': id})
+        serializer = self.serializer_class(data=request.data, context={'user': request.user, 'hospital': hospital})
         if not(serializer.is_valid()):
             return Response({'message': 'Falha ao cadastrar o setor de internação, verifique os dados inseridos e tente novamente.', 'data': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
         

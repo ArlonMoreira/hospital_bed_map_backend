@@ -75,7 +75,7 @@ class HospitalView(generics.GenericAPIView):
         examples=RESPONSE_GET
     )
     def get(self, request, id=None):
-        
+        print('teste:', id)
         if id is None:
             serializer = self.serializer_class(Hospital.objects.all(), many=True)
             return Response({'message': 'Dados obtidos com sucesso.', 'data': serializer.data}, status=status.HTTP_200_OK)
