@@ -51,11 +51,14 @@ class SectorDeleteView(generics.GenericAPIView):
 
         if sector.exists():
             sector_data = self.serializer_class(sector, many=True).data
+
+            if(sector.first().is_active):
+                return Response({'message': 'Não é permitido deletar setor ativo.'}, status=status.HTTP_400_BAD_REQUEST)
+            
             sector.delete()
         else:
-            return Response({'message': 'Setor não encontrado.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'Setor não encontrado.'}, status=status.HTTP_404_NOT_FOUND)
         
-
         return Response({'message': 'Setor deletado com sucesso.', 'data': sector_data}, status=status.HTTP_200_OK)
     
 class SectorPutView(generics.GenericAPIView):
