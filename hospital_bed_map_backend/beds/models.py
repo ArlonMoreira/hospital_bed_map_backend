@@ -1,5 +1,4 @@
 from django.db import models
-from hospital_bed_map_backend.hospital.models import Hospital
 from hospital_bed_map_backend.sectors.models import Sectors
 from django.conf import settings
 
@@ -10,13 +9,19 @@ class Type(models.Model):
         return self.description
 
     class Meta:
-        verbose_name = 'Tipo de ocupação'
-        verbose_name_plural = 'Tipo de ocupações'
+        verbose_name = 'Tipo de leito'
+        verbose_name_plural = 'Tipo de leitos'
 
 class TypeOccupation(models.Model):
-    code = models.CharField('Code', blank=False, null=False, max_length=1)
+
+    STATUS_CHOICES = {
+        ('VAGO', 'VAGO'),
+        ('OCUPADO', 'OCUPADO'),
+        ('BLOQUEADO', 'BLOQUEADO'),
+        ('RESERVADO', 'RESERVADO')
+    }
+    status = models.CharField('status', blank=False, null=False, max_length=45, choices=STATUS_CHOICES)
     description = models.CharField('Descrição', blank=False, null=False, max_length=45)
-    color_hex = models.CharField('color', blank=False, null=False, max_length=7)
 
     def __str__(self):
         return self.description
@@ -27,13 +32,6 @@ class TypeOccupation(models.Model):
 
 # Create your models here.
 class Beds(models.Model):
-    hospital = models.ForeignKey(
-        Hospital,
-        verbose_name='Hospital',
-        on_delete=models.CASCADE,
-        blank=False,
-        null=False
-    )
     sector = models.ForeignKey(
         Sectors,
         verbose_name='Setor',
