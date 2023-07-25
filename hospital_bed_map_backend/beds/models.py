@@ -21,7 +21,7 @@ class TypeOccupation(models.Model):
         ('RESERVADO', 'RESERVADO')
     }
     status = models.CharField('status', blank=False, null=False, max_length=45, choices=STATUS_CHOICES)
-    description = models.CharField('Descrição', blank=False, null=False, max_length=45)
+    description = models.CharField('Descrição', blank=False, null=False, unique=True, max_length=45)
 
     def __str__(self):
         return self.description
@@ -47,7 +47,6 @@ class Beds(models.Model):
         blank=True,
         null=True
     )
-    type_occupation_description = models.TextField('Descrição tipo de ocupação', blank=False, null=False, max_length=255)
     type = models.ForeignKey(
         Type,
         verbose_name='Tipo',
@@ -71,8 +70,8 @@ class Beds(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = 'Setor'
-        verbose_name_plural = 'Setores'
+        verbose_name = 'Leito'
+        verbose_name_plural = 'Leitos'
 
 
 
