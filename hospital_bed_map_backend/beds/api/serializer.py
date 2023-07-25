@@ -12,9 +12,8 @@ class BedsSerializer(serializers.ModelSerializer):
                   'is_active',
                   'is_extra',
                   'author')
-        
-    def save(self):
 
+    def save(self, **kwargs):
         beds = Beds(
             sector=self.validated_data.get('sector'),
             name=self.validated_data.get('name'),
@@ -27,5 +26,3 @@ class BedsSerializer(serializers.ModelSerializer):
         beds.save()
         
         return beds
-        
-    
