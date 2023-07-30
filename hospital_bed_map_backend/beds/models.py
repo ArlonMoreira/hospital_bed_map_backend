@@ -51,7 +51,7 @@ class Beds(models.Model):
         Type,
         verbose_name='Tipo',
         on_delete=models.SET_NULL,
-        blank=True,
+        blank=False,
         null=True
     )
     is_active = models.BooleanField('Ativo', default=True)

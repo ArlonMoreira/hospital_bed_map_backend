@@ -1,5 +1,17 @@
 from rest_framework import serializers
-from hospital_bed_map_backend.beds.models import Beds, Sectors, TypeOccupation, Type
+from hospital_bed_map_backend.beds.models import Beds, TypeOccupation, Type
+
+class TypeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Type
+        fields = ('id', 'description')
+
+class TypeOccupationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = TypeOccupation
+        fields = ('id', 'status', 'description')
 
 class BedsSerializer(serializers.ModelSerializer):
 

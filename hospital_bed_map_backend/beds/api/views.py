@@ -1,9 +1,29 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from hospital_bed_map_backend.beds.api.serializer import BedsSerializer
-from hospital_bed_map_backend.beds.models import Beds, TypeOccupation, Type
+from hospital_bed_map_backend.beds.api.serializer import TypeSerializer, BedsSerializer, TypeOccupationSerializer
+from hospital_bed_map_backend.beds.models import TypeOccupation, Type
 from hospital_bed_map_backend.sectors.models import Sectors
+
+class TypeView(generics.GenericAPIView):
+    serializer_class = TypeSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        data = Type.objects.all()
+        serializer = self.serializer_class(data, many=True).data
+        
+        return Response({'message': 'Dados recuperados com sucesso', 'data': serializer}, status=status.HTTP_200_OK)
+
+class TypeOccupationView(generics.GenericAPIView):
+    serializer_class = TypeOccupationSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        data = TypeOccupation.objects.all()
+        serializer = self.serializer_class(data, many=True).data
+
+        return Response({'message': 'Dados recuperados com sucesso', 'data': serializer}, status=status.HTTP_200_OK)
 
 class BedsView(generics.GenericAPIView):
     serializer_class = BedsSerializer
