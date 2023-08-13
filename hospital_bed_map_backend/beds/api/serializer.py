@@ -13,11 +13,27 @@ class TypeOccupationSerializer(serializers.ModelSerializer):
         model = TypeOccupation
         fields = ('id', 'status', 'description')
 
+class BedsStatusUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Beds
+        fields = ('id', 'type_occupation')
+
+    def save(self):
+        bed = self.instance.first()
+
+        bed.type_occupation = self.validated_data.get('type_occupation', bed.type_occupation)
+        bed.author = self.context['user']
+        bed.save()
+
+        return bed
+
 class BedsListSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     hospital_id = serializers.IntegerField()
     sector_id = serializers.IntegerField()
     name = serializers.CharField()
+    type_occupation_id = serializers.IntegerField()
     type_occupation_status = serializers.CharField()
     type_occupation_description = serializers.CharField()
     type = serializers.CharField()
@@ -25,8 +41,9 @@ class BedsListSerializer(serializers.Serializer):
     is_extra = serializers.BooleanField()
 
     class Meta:
-        fields = ('id', 'hospital_id', 'sector_id', 'name', 'type_occupation_status',
-                  'type_occupation_description', 'type', 'is_active', 'is_extra')
+        fields = ('id', 'hospital_id', 'sector_id', 'name', 'type_occupation_id',
+                  'type_occupation_status', 'type_occupation_description', 'type',
+                  'is_active', 'is_extra')
     
 class BedsSerializer(serializers.ModelSerializer):
 
