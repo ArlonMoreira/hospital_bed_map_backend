@@ -13,6 +13,21 @@ class TypeOccupationSerializer(serializers.ModelSerializer):
         model = TypeOccupation
         fields = ('id', 'status', 'description')
 
+class BedsListSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    hospital_id = serializers.IntegerField()
+    sector_id = serializers.IntegerField()
+    name = serializers.CharField()
+    type_occupation_status = serializers.CharField()
+    type_occupation_description = serializers.CharField()
+    type = serializers.CharField()
+    is_active = serializers.BooleanField()
+    is_extra = serializers.BooleanField()
+
+    class Meta:
+        fields = ('id', 'hospital_id', 'sector_id', 'name', 'type_occupation_status',
+                  'type_occupation_description', 'type', 'is_active', 'is_extra')
+    
 class BedsSerializer(serializers.ModelSerializer):
 
     class Meta:

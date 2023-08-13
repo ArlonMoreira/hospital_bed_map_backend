@@ -1,9 +1,10 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from hospital_bed_map_backend.beds.api.serializer import TypeSerializer, BedsSerializer, TypeOccupationSerializer
-from hospital_bed_map_backend.beds.models import TypeOccupation, Type
+from hospital_bed_map_backend.beds.api.serializer import BedsListSerializer, TypeSerializer, BedsSerializer, TypeOccupationSerializer
+from hospital_bed_map_backend.beds.models import TypeOccupation, Type, Beds
 from hospital_bed_map_backend.sectors.models import Sectors
+from django.db.models import F
 
 class TypeView(generics.GenericAPIView):
     serializer_class = TypeSerializer
@@ -24,6 +25,27 @@ class TypeOccupationView(generics.GenericAPIView):
         serializer = self.serializer_class(data, many=True).data
 
         return Response({'message': 'Dados recuperados com sucesso', 'data': serializer}, status=status.HTTP_200_OK)
+
+class BedsListView(generics.GenericAPIView):
+    serializer_class = BedsListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, sector=None):
+
+        data = Beds.objects.filter(sector=sector)\
+                .values('id', 'sector__hospital', 'sector', 
+                'name', 'type_occupation__status', 'type_occupation__description',
+                'type__description', 'is_active', 'is_extra')\
+                .annotate(  hospital_id=F('sector__hospital'), 
+                            sector_id=F('sector'),
+                            type_occupation_status=F('type_occupation__status'),
+                            type_occupation_description=F('type_occupation__description'),
+                            type=F('type__description'))
+        
+        serializer = self.serializer_class(data, many=True).data
+
+        return Response({'message': 'Dados recuperados com sucesso', 'data': serializer}, status=status.HTTP_200_OK)
+   
 
 class BedsView(generics.GenericAPIView):
     serializer_class = BedsSerializer
