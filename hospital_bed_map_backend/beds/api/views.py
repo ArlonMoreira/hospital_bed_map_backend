@@ -2,7 +2,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.generics import UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
-from hospital_bed_map_backend.beds.api.serializer import BedsStatusUpdateSerializer, BedsListSerializer, TypeSerializer, BedsSerializer, TypeOccupationSerializer
+from hospital_bed_map_backend.beds.api.serializer import BedsActiveUpdateSerializer, BedsStatusUpdateSerializer, BedsListSerializer, TypeSerializer, BedsSerializer, TypeOccupationSerializer
 from hospital_bed_map_backend.beds.models import TypeOccupation, Type, Beds
 from hospital_bed_map_backend.sectors.models import Sectors
 from django.db.models import F
@@ -47,6 +47,24 @@ class BedsListView(generics.GenericAPIView):
         serializer = self.serializer_class(data, many=True).data
 
         return Response({'message': 'Dados recuperados com sucesso', 'data': serializer}, status=status.HTTP_200_OK)
+    
+class BedsUpdateActiveView(generics.GenericAPIView):
+    serializer_class = BedsActiveUpdateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, bed=None):
+        bed = Beds.objects.filter(id=bed)
+
+        if bed.exists():
+            serializer = self.serializer_class(bed, data=request.data, context={'user': request.user})
+            if(not(serializer.is_valid())):
+                return Response({'message': 'Falha ao atualizar os dados do leito.', 'data': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            serializer_data = self.serializer_class(serializer.save()).data
+            
+        else:
+            return Response({'message': 'Leito não encontrado.'}, status=status.HTTP_404_NOT_FOUND)  
+
+        return Response({'message': 'Dados do leito atualizado com sucesso.', 'data': [serializer_data]}, status=status.HTTP_200_OK)
 
 class BedsUpdateStatusView(generics.GenericAPIView):
     serializer_class = BedsStatusUpdateSerializer

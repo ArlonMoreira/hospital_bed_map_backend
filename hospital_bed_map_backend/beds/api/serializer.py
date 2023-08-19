@@ -13,6 +13,21 @@ class TypeOccupationSerializer(serializers.ModelSerializer):
         model = TypeOccupation
         fields = ('id', 'status', 'description')
 
+class BedsActiveUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Beds
+        fields = ('id', 'is_active')
+
+    def save(self):
+        bed = self.instance.first()
+
+        bed.is_active = self.validated_data.get('is_active', bed.is_active)
+        bed.author = self.context['user']
+        bed.save()
+
+        return bed
+
 class BedsStatusUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
