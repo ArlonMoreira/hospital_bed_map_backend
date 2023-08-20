@@ -91,6 +91,23 @@ class BedsUpdateStatusView(generics.GenericAPIView):
         
         return Response({'message': 'Dados do leito atualizado com sucesso.', 'data': [data]}, status=status.HTTP_200_OK)
     
+class BedsDeleteView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+    
+    def delete(self, request, bed=None):
+        data = Beds.objects.filter(id=bed)
+
+        if(data.exists()):
+            id_leito = data.first().pk
+            if(data.values('type_occupation__status').first()['type_occupation__status'] == 'OCUPADO'):
+                return Response({'message': 'Leito ocupado não pode ser deletado.'}, status=status.HTTP_400_BAD_REQUEST)
+            data.delete()
+
+        else:
+            return Response({'message': 'Leito não encontrado.'}, status=status.HTTP_404_NOT_FOUND) 
+
+        return Response({'message': 'Dados do leito removido com sucesso.', 'data': [{'id': id_leito}]}, status=status.HTTP_200_OK)
+    
 class BedsView(generics.GenericAPIView):
     serializer_class = BedsSerializer
     permission_classes = [IsAuthenticated]
