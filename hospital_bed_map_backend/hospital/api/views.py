@@ -51,6 +51,19 @@ class HospitalViewNoParams(generics.GenericAPIView):
         serializer_data = self.serializer_class(serializer.save()).data
 
         return Response({'message': 'Hospital cadastrado.', 'data': [serializer_data]}, status=status.HTTP_201_CREATED)
+    
+class HospitalPublicView(generics.GenericAPIView):
+    serializer_class = HospitalSerializer
+
+    @extend_schema(
+        responses={
+            200: OpenApiTypes.OBJECT,
+        },
+        examples=RESPONSE_GET
+    )
+    def get(self, request):
+        serializer = self.serializer_class(Hospital.objects.filter(is_active=True), many=True)
+        return Response({'message': 'Dados obtidos com sucesso.', 'data': serializer.data}, status=status.HTTP_200_OK) 
 
 class HospitalView(generics.GenericAPIView):
     serializer_class = HospitalSerializer
@@ -75,7 +88,6 @@ class HospitalView(generics.GenericAPIView):
         examples=RESPONSE_GET
     )
     def get(self, request, id=None):
-        print('teste:', id)
         if id is None:
             serializer = self.serializer_class(Hospital.objects.all(), many=True)
             return Response({'message': 'Dados obtidos com sucesso.', 'data': serializer.data}, status=status.HTTP_200_OK)
