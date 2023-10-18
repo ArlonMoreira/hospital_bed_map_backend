@@ -47,19 +47,20 @@ class BedsListPublicSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField()
     sector = serializers.SerializerMethodField()
+    type_occupation_id = serializers.IntegerField()
     type_occupation_status = serializers.CharField()
     type_occupation_description = serializers.CharField()
     type = serializers.CharField()
     is_extra = serializers.BooleanField()    
 
     class Meta:
-        fields = ('id', 'name', 'sector', 'type_occupation_status', 'type_occupation_description', 'type', 'is_extra')
+        fields = ('id', 'name', 'sector', 'type_occupation_id', 'type_occupation_status', 'type_occupation_description', 'type', 'is_extra')
 
     def get_sector(self, obj):
         sector_data = {
             'id': obj['sector__id'],
             'name': obj['sector__name'],
-            'tip_acc_description': obj['sector__tip_acc__description']
+            'tip_acc': obj['sector__tip_acc__description']
         }
         return sector_data      
         

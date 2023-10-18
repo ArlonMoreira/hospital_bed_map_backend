@@ -35,11 +35,13 @@ class BedsPublicView(generics.GenericAPIView):
         #Só retorna leitos ativos
         beds = Beds.objects.filter(sector__in=sectors, is_active=True)\
         .values('id', 'name', 'is_extra',
+                'type_occupation__pk',
                 'type_occupation__status', 'type_occupation__description',
                 'sector__tip_acc__description',
                 'type__description',
                 'sector__id', 'sector__name')\
-        .annotate(  type_occupation_status=F('type_occupation__status'),
+        .annotate(  type_occupation_id=F('type_occupation__pk'),
+                    type_occupation_status=F('type_occupation__status'),
                     type=F('type__description'),
                     type_occupation_description=F('type_occupation__description'))
         
@@ -62,6 +64,7 @@ class BedsPublicView(generics.GenericAPIView):
                 'id': bed['id'],
                 'name': bed['name'],
                 'is_extra': bed['is_extra'],
+                'type_occupation_id': bed['type_occupation_id'],
                 'type_occupation_status': bed['type_occupation_status'],
                 'type_occupation_description': bed['type_occupation_description'],
                 'type': bed['type']          
