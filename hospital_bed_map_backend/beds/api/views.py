@@ -31,7 +31,7 @@ class BedsPublicView(generics.GenericAPIView):
     serializer_class = BedsListPublicSerializer
 
     def get(self, request, hospital=None):
-        sectors = Sectors.objects.filter(hospital=hospital, is_active=True)
+        sectors = Sectors.objects.filter(hospital__cnes=hospital, is_active=True)
         #Só retorna leitos ativos
         beds = Beds.objects.filter(sector__in=sectors, is_active=True)\
         .values('id', 'name', 'is_extra',
